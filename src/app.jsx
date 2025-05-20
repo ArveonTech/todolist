@@ -8,8 +8,6 @@ import TodoCard from "./components/templates/TodoCard";
 import SearchInputCard from "./components/templates/SearchInputCard";
 
 function App() {
-  const [judul, setJudul] = useState(null);
-
   const router = createBrowserRouter([
     {
       path: "/",
@@ -23,8 +21,7 @@ function App() {
       path: "/data",
       element: (
         <TodoCardCon>
-          <SearchInputCard onUpdate={setJudul} />
-          <TodoCard judul={judul} />
+          <TodoCard />
         </TodoCardCon>
       ),
     },
