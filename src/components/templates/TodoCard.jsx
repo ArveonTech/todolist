@@ -6,7 +6,6 @@ export default function TodoCard({ judul }) {
   const [judulEdit, setJudulEdit] = useState("");
   const [catatanEdit, setCatatanEdit] = useState("");
   const [todos, setTodos] = useState([]);
-
   const [input, setInput] = useState("");
 
   useEffect(() => {
@@ -15,10 +14,6 @@ export default function TodoCard({ judul }) {
       .then((data) => setTodos(data))
       .catch((err) => console.error(err));
   }, []);
-
-  useEffect(() => {
-    console.log(judul);
-  }, [judul]);
 
   function handleDelate(id) {
     fetch(`http://localhost:3000/todos/${id}`, { method: "DELETE" })
@@ -75,10 +70,42 @@ export default function TodoCard({ judul }) {
     });
   }
 
+  function semua() {
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data))
+      .catch((err) => console.error(err));
+  }
+
+  function filterSelesai() {
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data.filter((d) => d.done === true)))
+      .catch((err) => console.error(err));
+  }
+
+  function filterBelumSelesai() {
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data.filter((d) => d.done === false)))
+      .catch((err) => console.error(err));
+  }
+
   return (
     <>
-      <div className="max-w-2xl mx-auto flex flex-col">
+      <div className="max-w-2xl mx-auto flex flex-col mt-10">
         <input type="text" placeholder="Search" className="p-2 bg-gray-200 rounded-lg outline-none" onChange={(e) => setInput(e.target.value)} />
+        <div className="flex gap-10 mt-10">
+          <button className="bg-green-500 p-2 rounded-2xl text-white cursor-pointer" onClick={semua}>
+            Semua
+          </button>
+          <button className="bg-blue-500 p-2 rounded-2xl text-white cursor-pointer" onClick={filterSelesai}>
+            Selesai
+          </button>
+          <button className="bg-red-500 p-2 rounded-2xl text-white cursor-pointer" onClick={filterBelumSelesai}>
+            Belum Selesai
+          </button>
+        </div>
         <div className="w-full flex gap-10 flex-wrap justify-center mt-20">
           {todos &&
             todos
