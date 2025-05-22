@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function TodoCard() {
   const [cardEdit, setCardEdit] = useState(false);
@@ -9,6 +10,33 @@ export default function TodoCard() {
   const [catatanEdit, setCatatanEdit] = useState("");
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
+
+  const infoNotify = (p) => {
+    toast.info(`${p}`, {
+      position: "top-left",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+  };
+
+  const errorNotify = (error) =>
+    toast.error(`${error}`, {
+      position: "top-left",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
 
   // ambil data
   useEffect(() => {
@@ -27,8 +55,10 @@ export default function TodoCard() {
   async function handleDelate(id) {
     try {
       const deleteData = await axios.delete(`http://localhost:3000/todos/${id}`).then(() => setTodos((prev) => prev.filter((todo) => todo.id !== id)));
+      infoNotify("Tugas berhasil di hapus");
     } catch (error) {
       alert(error);
+      errorNotify("Tugas gagal dihapus");
     }
   }
 
@@ -57,9 +87,11 @@ export default function TodoCard() {
         .then((updatedTodo) => {
           // Update todos dengan todo yang telah diperbarui
           setTodos((prev) => prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
+          infoNotify("Tugas berhasil diupdate");
         });
     } catch (error) {
       alert(error);
+      errorNotify("Tugas gagal diupdate");
     }
 
     setJudulEdit("");
@@ -75,6 +107,11 @@ export default function TodoCard() {
 
       // Update data lokal
       setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !currentDone } : todo)));
+      if (!currentDone) {
+        infoNotify("Tugas ditandai selesai!");
+      } else {
+        infoNotify("Tugas dikembalikan ke belum selesai.");
+      }
     } catch (error) {
       alert(error);
     }
@@ -186,6 +223,7 @@ export default function TodoCard() {
                 </div>
               ))}
         </div>
+        <ToastContainer position="top-left" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
       </div>
     </>
   );

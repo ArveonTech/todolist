@@ -9,29 +9,29 @@ export default function TodoForm() {
   const [catatan, setCatatan] = useState("");
 
   const successNotify = () => {
-    toast.success("Data berhasil dikirim ✅", {
+    toast.success("Data berhasil dikirim", {
       position: "top-left",
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
-      closeOnClick: false,
+      closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: "colored",
       transition: Bounce,
     });
   };
 
   const errorNotify = (error) =>
-    toast.error(`${error}`, {
+    toast.info(`${error}`, {
       position: "top-left",
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
-      closeOnClick: false,
+      closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: "colored",
       transition: Bounce,
     });
 
@@ -114,7 +114,7 @@ export default function TodoForm() {
           <p className="font-normal text-gray-700 dark:text-gray-400">{catatan}</p>
         </div>
       </div>
-      <ToastContainer position="top-left" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
+      <ToastContainer position="top-left" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );
 }
