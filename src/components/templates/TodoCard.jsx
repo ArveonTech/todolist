@@ -71,24 +71,10 @@ export default function TodoCard() {
 
   async function handleSubmit(id, judul, catatan) {
     try {
-      const submit = await axios
-        .patch(
-          `http://localhost:3000/todos/${id}`,
-          {
-            judul,
-            catatan,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((updatedTodo) => {
-          // Update todos dengan todo yang telah diperbarui
-          setTodos((prev) => prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
-          infoNotify("Tugas berhasil diupdate");
-        });
+      const res = await axios.patch(`http://localhost:3000/todos/${id}`, { judul, catatan });
+      const updatedTodo = res.data;
+      setTodos((prev) => prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
+      infoNotify("Tugas berhasil diupdate");
     } catch (error) {
       alert(error);
       errorNotify("Tugas gagal diupdate");
@@ -146,7 +132,7 @@ export default function TodoCard() {
 
   return (
     <>
-      <div className="max-w-2xl mx-auto flex flex-col mt-10">
+      <div className="max-w-2xl md:max-w-4xl px-7 mx-auto flex flex-col mt-10">
         <input type="text" placeholder="Search" className="p-2 bg-gray-200 rounded-lg outline-none" onChange={(e) => setInput(e.target.value)} />
         <div className="flex gap-10 mt-10">
           <button className="bg-green-500 p-2 rounded-2xl text-white cursor-pointer" onClick={semua}>
@@ -164,9 +150,15 @@ export default function TodoCard() {
             todos
               .filter((d) => d.judul.toLowerCase().includes(input))
               .map((d) => (
-                <div key={d.id} className="max-w-md w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 mx-auto my-4">
+                <div key={d.id} className="max-w-sm w-full bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 mx-auto my-4">
                   {cardEdit && editingId === d.id ? (
-                    <form className="flex flex-col pt-10 bg-white p-6">
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSubmit(d.id, judulEdit, catatanEdit);
+                      }}
+                      className="flex flex-col pt-10 bg-white p-6"
+                    >
                       <label htmlFor="judul" className="pb-2">
                         Judul :
                       </label>
@@ -193,7 +185,7 @@ export default function TodoCard() {
                         value={catatanEdit}
                         onChange={(e) => setCatatanEdit(e.target.value)}
                       />
-                      <button className="mt-7 p-2 rounded-3xl bg-cyan-300 hover:bg-cyan-600 focus:outline-2 focus:outline-offset-2 focus:outline-cyan-500 cursor-pointer" onClick={() => handleSubmit(d.id, judulEdit, catatanEdit)}>
+                      <button type="submit" className="mt-7 p-2 rounded-3xl bg-cyan-300 hover:bg-cyan-600 focus:outline-2 focus:outline-offset-2 focus:outline-cyan-500 cursor-pointer">
                         Submit
                       </button>
                     </form>
@@ -201,7 +193,7 @@ export default function TodoCard() {
                     <div className="p-6 rounded-lg bg-gray-800 border-gray-700 dark:hover:bg-gray-700 ">
                       <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{d.judul}</h5>
                       <p className="font-normal text-gray-700 dark:text-gray-400">{d.catatan}</p>
-                      <div id="menu" className="flex justify-around mt-5">
+                      <div id="menu" className="flex justify-around gap-5 mt-5">
                         <button
                           className="w-20 bg-blue-700 text-white p-2 rounded-xl cursor-pointer"
                           onClick={() => {

@@ -70,7 +70,7 @@ export default function TodoForm() {
 
   return (
     <div>
-      <div className="w-96 flex justify-center border flex-col p-7 border-cyan-700 rounded-2xl">
+      <div className="w-80 flex justify-center border flex-col p-7 border-cyan-700 rounded-2xl">
         <h1 className="text-center text-2xl pb-3 font-semibold border-b">Form To-Do-Lists</h1>
         <form onSubmit={handleSubmit} className="flex flex-col pt-10">
           <label htmlFor="judul" className="pb-2">
