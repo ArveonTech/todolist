@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
-export default function TodoCard({ judul }) {
+export default function TodoCard() {
   const [cardEdit, setCardEdit] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [judulEdit, setJudulEdit] = useState("");
@@ -8,21 +10,26 @@ export default function TodoCard({ judul }) {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
 
+  // ambil data
   useEffect(() => {
-    fetch("http://localhost:3000/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data))
-      .catch((err) => console.error(err));
+    async function fetchTodos() {
+      try {
+        const res = await axios.get("http://localhost:3000/todos");
+        setTodos(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTodos();
   }, []);
 
-  function handleDelate(id) {
-    fetch(`http://localhost:3000/todos/${id}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal hapus data");
-        return res.json();
-      })
-      .then(() => setTodos((prev) => prev.filter((todo) => todo.id !== id)))
-      .catch((err) => console.error(err));
+  // hapus data
+  async function handleDelate(id) {
+    try {
+      const deleteData = await axios.delete(`http://localhost:3000/todos/${id}`).then(() => setTodos((prev) => prev.filter((todo) => todo.id !== id)));
+    } catch (error) {
+      alert(error);
+    }
   }
 
   function handleEdit(id, judul, catatan) {
@@ -32,63 +39,72 @@ export default function TodoCard({ judul }) {
     setCatatanEdit(catatan);
   }
 
-  function handleSubmit(id, judul, catatan) {
-    fetch(`http://localhost:3000/todos/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        judul,
-        catatan,
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Gagal edit data");
-        return res.json();
-      })
-      .then((updatedTodo) => {
-        // Update todos dengan todo yang telah diperbarui
-        setTodos((prev) => prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
-      })
-      .catch((err) => console.error(err));
+  async function handleSubmit(id, judul, catatan) {
+    try {
+      const submit = await axios
+        .patch(
+          `http://localhost:3000/todos/${id}`,
+          {
+            judul,
+            catatan,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((updatedTodo) => {
+          // Update todos dengan todo yang telah diperbarui
+          setTodos((prev) => prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
+        });
+    } catch (error) {
+      alert(error);
+    }
 
     setJudulEdit("");
     setCatatanEdit("");
     setCardEdit(false);
   }
 
-  function handleDone(id, done) {
-    fetch(`http://localhost:3000/todos/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        done: !done,
-      }),
-    });
+  async function handleDone(id, currentDone) {
+    try {
+      const res = await axios.patch(`http://localhost:3000/todos/${id}`, {
+        done: !currentDone,
+      });
+
+      // Update data lokal
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, done: !currentDone } : todo)));
+    } catch (error) {
+      alert(error);
+    }
   }
 
-  function semua() {
-    fetch("http://localhost:3000/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data))
-      .catch((err) => console.error(err));
+  async function semua() {
+    try {
+      const res = await axios.get("http://localhost:3000/todos");
+      setTodos(res.data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  function filterSelesai() {
-    fetch("http://localhost:3000/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data.filter((d) => d.done === true)))
-      .catch((err) => console.error(err));
+  async function filterSelesai() {
+    try {
+      const res = await axios.get("http://localhost:3000/todos");
+      setTodos(res.data.filter((d) => d.done === true));
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  function filterBelumSelesai() {
-    fetch("http://localhost:3000/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data.filter((d) => d.done === false)))
-      .catch((err) => console.error(err));
+  async function filterBelumSelesai() {
+    try {
+      const res = await axios.get("http://localhost:3000/todos");
+      setTodos(res.data.filter((d) => d.done === false));
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (

@@ -1,45 +1,71 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast, Slide } from "react-toastify";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 export default function TodoForm() {
-  const navigate = useNavigate();
   const [judul, setJudul] = useState("");
   const [catatan, setCatatan] = useState("");
-  const notify = () => toast("Wow so easy !");
 
-  function handleSubmit(e) {
+  const successNotify = () => {
+    toast.success("Data berhasil dikirim ✅", {
+      position: "top-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+
+  const errorNotify = (error) =>
+    toast.error(`${error}`, {
+      position: "top-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    // const newJudul = e.target.judul.value;
-    // const newCatatan = e.target.catatan.value;
 
-    // fetch("http://localhost:3000/todos", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     judul,
-    //     catatan,
-    //     done: false,
-    //   }),
-    // })
-    //   .then((response) => response.json())
-    //   .then((newPerson) => console.log("berhasil"))
-    //   .catch((error) => console.error("Fetch error:", error));
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/todos",
+        {
+          judul,
+          catatan,
+          done: false,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer token_kamu",
+          },
+        }
+      );
 
-    // const respons = axios.post("http://localhost:3000/todos", {
-    //   body: JSON.stringify({
-    //     judul,
-    //     catatan,
-    //     done: false,
-    //   }),
-    // });
-
-    // console.log(respons);
-    console.log("tesas")
+      setJudul("");
+      setCatatan("");
+      successNotify();
+    } catch (error) {
+      if (error.response) {
+        errorNotify("Terjadi kesalahan pada server");
+      } else if (error.request) {
+        errorNotify("Error: Server tidak merespons.");
+      } else {
+        errorNotify("Data Gagal dikirim");
+      }
+    }
   }
 
   return (
@@ -50,17 +76,37 @@ export default function TodoForm() {
           <label htmlFor="judul" className="pb-2">
             Judul :
           </label>
-          <input type="text" name="judul" id="judul" className="border p-2 rounded-xl focus:outline-none focus:border-cyan-500 focus:border-2" placeholder="Masukkan judul catatan" required onChange={(e) => setJudul(e.target.value)} />
+          <input
+            type="text"
+            name="judul"
+            id="judul"
+            className="border p-2 rounded-xl focus:outline-none focus:border-cyan-500 focus:border-2"
+            placeholder="Masukkan judul catatan"
+            required
+            value={judul}
+            onChange={(e) => setJudul(e.target.value)}
+          />
           <label htmlFor="catatan" className="pb-2 mt-5">
             Catatan :
           </label>
-          <input type="text" name="catatan" id="catatan" className="border p-2 rounded-xl focus:outline-none focus:border-cyan-500 focus:border-2" placeholder="Masukkan catatan" required onChange={(e) => setCatatan(e.target.value)} />
-          <button type="submit" className="mt-7 p-2 rounded-3xl bg-cyan-300 hover:bg-cyan-600 focus:outline-2 focus:outline-offset-2 focus:outline-cyan-500 cursor-pointer" >
+          <input
+            type="text"
+            name="catatan"
+            id="catatan"
+            className="border p-2 rounded-xl focus:outline-none focus:border-cyan-500 focus:border-2"
+            placeholder="Masukkan catatan"
+            required
+            value={catatan}
+            onChange={(e) => setCatatan(e.target.value)}
+          />
+          <button type="submit" className="mt-7 p-2 rounded-3xl bg-cyan-300 hover:bg-cyan-600 focus:outline-2 focus:outline-offset-2 focus:outline-cyan-500 cursor-pointer">
             Submit
           </button>
         </form>
       </div>
-      <button className="block mt-10 mx-auto bg-emerald-400 p-2 rounded-xl cursor-pointer hover:bg-emerald-600 focus:outline-2 focus:outline-offset-2 focus:outline-emerald-500">Lihat data</button>
+      <Link to="/data">
+        <button className="block mt-10 mx-auto bg-emerald-400 p-2 rounded-xl cursor-pointer hover:bg-emerald-600 focus:outline-2 focus:outline-offset-2 focus:outline-emerald-500">Lihat data</button>
+      </Link>
       <div className="mt-16">
         <h2 className="text-center">Preview : </h2>
         <div className="max-w-md w-full p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mx-auto my-4">
@@ -68,6 +114,7 @@ export default function TodoForm() {
           <p className="font-normal text-gray-700 dark:text-gray-400">{catatan}</p>
         </div>
       </div>
+      <ToastContainer position="top-left" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );
 }

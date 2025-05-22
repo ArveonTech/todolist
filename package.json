@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm:react\" \"npm:api\"",
     "react": "vite",
-    "api": "json-server -w data/todo.json -p 3000",
+    "api": "json-server -w ../data/todo.json -p 3000",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
