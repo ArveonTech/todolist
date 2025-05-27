@@ -114,6 +114,7 @@ export default function TodoForm() {
           <p className="font-normal text-gray-700 dark:text-gray-400">{catatan}</p>
         </div>
       </div>
+      <h2 className="text-center h-10 font-semibold text-2xl">Created By : Arveon</h2>;
       <ToastContainer position="top-left" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );
